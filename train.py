@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 #title           :train.py
 #description     :to train the model
-#author          :Deepak Birla
-#date            :2018/10/30
+#author          :Tomoki
+#date            :2020/05/09
 #usage           :python train.py --options
-#python_version  :3.5.4 
+#python_version  :3.7.3
 
 from Network import Generator, Discriminator
 import Utils_model, Utils
@@ -23,13 +23,13 @@ downscale_factor = 4
 image_shape = (200,200,1)
 
 # Combined network
-def get_gan_network(discriminator, shape, generator, optimizer, vgg_loss):
+def get_gan_network(discriminator, shape, generator, optimizer):
     discriminator.trainable = False
     gan_input = Input(shape=shape)
     x = generator(gan_input)
     gan_output = discriminator(x)
     gan = Model(inputs=gan_input, outputs=[x,gan_output])
-    gan.compile(loss=[vgg_loss, "binary_crossentropy"],
+    gan.compile(loss=["mse", "binary_crossentropy"],
                 loss_weights=[1., 1e-3],
                 optimizer=optimizer)
 
@@ -38,9 +38,8 @@ def get_gan_network(discriminator, shape, generator, optimizer, vgg_loss):
 # default values for all parameters are given, if want defferent values you can give via commandline
 # for more info use $python train.py -h
 def train(epochs, batch_size, input_dir, output_dir, model_save_dir, number_of_images, train_test_ratio):
-    
-    x_train_lr, x_train_hr, x_test_lr, x_test_hr = Utils.load_training_data(input_dir, '.jpg', number_of_images, train_test_ratio) 
-    loss = VGG_LOSS(image_shape)  
+
+    x_train_lr, x_train_hr, x_test_lr, x_test_hr = Utils.load_training_data(input_dir, '.jpg', number_of_images, train_test_ratio)  
     
     batch_count = int(x_train_hr.shape[0] / batch_size)
     shape = (image_shape[0]//downscale_factor, image_shape[1]//downscale_factor, image_shape[2])
@@ -49,10 +48,10 @@ def train(epochs, batch_size, input_dir, output_dir, model_save_dir, number_of_i
     discriminator = Discriminator(image_shape).discriminator()
 
     optimizer = Utils_model.get_optimizer()
-    generator.compile(loss=loss.vgg_loss, optimizer=optimizer)
+    generator.compile(loss='mse', optimizer=optimizer)
     discriminator.compile(loss="binary_crossentropy", optimizer=optimizer)
     
-    gan = get_gan_network(discriminator, shape, generator, optimizer, loss.vgg_loss)
+    gan = get_gan_network(discriminator, shape, generator, optimizer)
     
     loss_file = open(model_save_dir + 'losses.txt' , 'w+')
     loss_file.close()
@@ -65,6 +64,11 @@ def train(epochs, batch_size, input_dir, output_dir, model_save_dir, number_of_i
             
             image_batch_hr = x_train_hr[rand_nums]
             image_batch_lr = x_train_lr[rand_nums]
+
+            # Channel:1
+            image_batch_hr = image_batch_hr.reshape(image_batch_hr.shape[0], image_batch_hr.shape[1], image_batch_hr.shape[2], 1)
+            image_batch_lr = image_batch_lr.reshape(image_batch_lr.shape[0], image_batch_lr.shape[1], image_batch_lr.shape[2], 1)
+
             generated_images_sr = generator.predict(image_batch_lr)
 
             real_data_Y = np.ones(batch_size) - np.random.random_sample(batch_size)*0.2
@@ -80,6 +84,9 @@ def train(epochs, batch_size, input_dir, output_dir, model_save_dir, number_of_i
             image_batch_hr = x_train_hr[rand_nums]
             image_batch_lr = x_train_lr[rand_nums]
 
+            image_batch_hr = image_batch_hr.reshape(image_batch_hr.shape[0], image_batch_hr.shape[1], image_batch_hr.shape[2], 1)
+            image_batch_lr = image_batch_lr.reshape(image_batch_lr.shape[0], image_batch_lr.shape[1], image_batch_lr.shape[2], 1)
+
             gan_Y = np.ones(batch_size) - np.random.random_sample(batch_size)*0.2
             discriminator.trainable = False
             gan_loss = gan.train_on_batch(image_batch_lr, [image_batch_hr,gan_Y])
@@ -93,9 +100,9 @@ def train(epochs, batch_size, input_dir, output_dir, model_save_dir, number_of_i
         loss_file.write('epoch%d : gan_loss = %s ; discriminator_loss = %f\n' %(e, gan_loss, discriminator_loss) )
         loss_file.close()
 
-        if e == 1 or e % 5 == 0:
+        if e == 1 or e % 25 == 0:
             Utils.plot_generated_images(output_dir, e, generator, x_test_hr, x_test_lr)
-        if e % 500 == 0:
+        if e % 300 == 0:
             generator.save(model_save_dir + 'gen_model%d.h5' % e)
             discriminator.save(model_save_dir + 'dis_model%d.h5' % e)
 

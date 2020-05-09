@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 #title           :Network.py
 #description     :Architecture file(Generator and Discriminator)
-#author          :Deepak Birla
-#date            :2018/10/30
+#author          :Tomoki
+#date            :2020/05/09
 #usage           :from Network import Generator, Discriminator
-#python_version  :3.5.4 
+#python_version  :3.7.3
 
 # Modules
 from keras.layers import Dense

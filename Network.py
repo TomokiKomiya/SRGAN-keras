@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 #title           :Network.py
 #description     :Architecture file(Generator and Discriminator)
-#author          :Deepak Birla
-#date            :2018/10/30
+#author          :Tomoki
+#date            :2020/05/09
 #usage           :from Network import Generator, Discriminator
-#python_version  :3.5.4 
+#python_version  :3.7.3
 
 # Modules
 from keras.layers import Dense
@@ -66,25 +66,29 @@ class Generator(object):
     def generator(self):
         
 	    gen_input = Input(shape = self.noise_shape)
-	    
-	    model = Conv2D(filters = 64, kernel_size = 9, strides = 1, padding = "same")(gen_input)
+        
+	    model = Conv2D(filters = 8, kernel_size = 9, strides = 1, padding = "same")(gen_input)
 	    model = PReLU(alpha_initializer='zeros', alpha_regularizer=None, alpha_constraint=None, shared_axes=[1,2])(model)
 	    
 	    gen_model = model
         
         # Using 16 Residual Blocks
 	    for index in range(16):
-	        model = res_block_gen(model, 3, 64, 1)
+	        model = res_block_gen(model, 3, 8, 1)
+	        # model = res_block_gen(model, 3, 64, 1)
 	    
-	    model = Conv2D(filters = 64, kernel_size = 3, strides = 1, padding = "same")(model)
+	    model = Conv2D(filters = 8, kernel_size = 3, strides = 1, padding = "same")(model)
+	    # model = Conv2D(filters = 64, kernel_size = 3, strides = 1, padding = "same")(model)
 	    model = BatchNormalization(momentum = 0.5)(model)
 	    model = add([gen_model, model])
 	    
 	    # Using 2 UpSampling Blocks
 	    for index in range(2):
-	        model = up_sampling_block(model, 3, 256, 1)
+	        model = up_sampling_block(model, 3, 8, 1)
+            # model = up_sampling_block(model, 3, 256, 1)
 	    
-	    model = Conv2D(filters = 3, kernel_size = 9, strides = 1, padding = "same")(model)
+	    model = Conv2D(filters = 1, kernel_size = 9, strides = 1, padding = "same")(model)
+	    # model = Conv2D(filters = 3, kernel_size = 9, strides = 1, padding = "same")(model)
 	    model = Activation('tanh')(model)
 	   
 	    generator_model = Model(inputs = gen_input, outputs = model)
@@ -103,15 +107,24 @@ class Discriminator(object):
         dis_input = Input(shape = self.image_shape)
         
         model = Conv2D(filters = 64, kernel_size = 3, strides = 1, padding = "same")(dis_input)
+        # model = Conv2D(filters = 8, kernel_size = 3, strides = 1, padding = "same")(dis_input)
         model = LeakyReLU(alpha = 0.2)(model)
         
-        model = discriminator_block(model, 64, 3, 2)
-        model = discriminator_block(model, 128, 3, 1)
-        model = discriminator_block(model, 128, 3, 2)
-        model = discriminator_block(model, 256, 3, 1)
-        model = discriminator_block(model, 256, 3, 2)
-        model = discriminator_block(model, 512, 3, 1)
-        model = discriminator_block(model, 512, 3, 2)
+        model = discriminator_block(model, 8, 3, 2)
+        model = discriminator_block(model, 8, 3, 1)
+        model = discriminator_block(model, 8, 3, 2)
+        model = discriminator_block(model, 8, 3, 1)
+        model = discriminator_block(model, 8, 3, 2)
+        model = discriminator_block(model, 8, 3, 1)
+        model = discriminator_block(model, 8, 3, 2)
+        
+        # model = discriminator_block(model, 64, 3, 2)
+        # model = discriminator_block(model, 128, 3, 1)
+        # model = discriminator_block(model, 128, 3, 2)
+        # model = discriminator_block(model, 256, 3, 1)
+        # model = discriminator_block(model, 256, 3, 2)
+        # model = discriminator_block(model, 512, 3, 1)
+        # model = discriminator_block(model, 512, 3, 2)
         
         model = Flatten()(model)
         model = Dense(1024)(model)

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 #title           :test.py
 #description     :to test the model
-#author          :Deepak Birla
-#date            :2018/10/30
+#author          :Tomoki
+#date            :2020/05/09
 #usage           :python test.py --options
-#python_version  :3.5.4 
+#python_version  :3.7.3
 
 from keras.models import Model
 import matplotlib.pyplot as plt

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #title           :Utils.py
 #description     :Have helper functions to process images and plot images
-#author          :Deepak Birla
-#date            :2018/10/30
+#author          :Tomoki
+#date            :2020/05/09
 #usage           :imported in other files
 #python_version  :3.5.4
 
@@ -69,12 +69,11 @@ def load_data_from_dirs(dirs, ext):
     file_names = []
     count = 0
     for d in dirs:
-        for f in os.listdir(d): 
+        for f in os.listdir(d):
             if f.endswith(ext):
-                image = data.imread(os.path.join(d,f))
-                if len(image.shape) > 2:
-                    files.append(image)
-                    file_names.append(os.path.join(d,f))
+                image = plt.imread(os.path.join(d,f))
+                files.append(image)
+                file_names.append(os.path.join(d,f))
                 count = count + 1
     return files     
 
@@ -157,29 +156,40 @@ def plot_generated_images(output_dir, epoch, generator, x_test_hr, x_test_lr , d
     print(examples)
     value = randint(0, examples)
     image_batch_hr = denormalize(x_test_hr)
+    image_batch_hr = image_batch_hr.reshape(image_batch_hr.shape[0], image_batch_hr.shape[1], image_batch_hr.shape[2], 1)
+
     image_batch_lr = x_test_lr
+    image_batch_lr = image_batch_lr.reshape(image_batch_lr.shape[0], image_batch_lr.shape[1], image_batch_lr.shape[2], 1)
+
     gen_img = generator.predict(image_batch_lr)
+
     generated_image = denormalize(gen_img)
+    generated_image = generated_image.reshape(generated_image.shape[0], generated_image.shape[1], generated_image.shape[2], 1)
+
     image_batch_lr = denormalize(image_batch_lr)
-    
+
+    image_batch_hr = image_batch_hr.reshape(image_batch_hr.shape[0], image_batch_hr.shape[1], image_batch_hr.shape[2])
+    image_batch_lr = image_batch_lr.reshape(image_batch_lr.shape[0], image_batch_lr.shape[1], image_batch_lr.shape[2])
+    generated_image = generated_image.reshape(generated_image.shape[0], generated_image.shape[1], generated_image.shape[2])
+
     plt.figure(figsize=figsize)
     
     plt.subplot(dim[0], dim[1], 1)
-    plt.imshow(image_batch_lr[value], interpolation='nearest')
+    plt.imshow(image_batch_lr[value], cmap = "gray", interpolation='None')
     plt.axis('off')
         
     plt.subplot(dim[0], dim[1], 2)
-    plt.imshow(generated_image[value], interpolation='nearest')
+    plt.imshow(generated_image[value], cmap = "gray", interpolation='None')
     plt.axis('off')
     
     plt.subplot(dim[0], dim[1], 3)
-    plt.imshow(image_batch_hr[value], interpolation='nearest')
+    plt.imshow(image_batch_hr[value], cmap = "gray", interpolation='None')
     plt.axis('off')
     
     plt.tight_layout()
     plt.savefig(output_dir + 'generated_image_%d.png' % epoch)
     
-    #plt.show()
+    # plt.show()
     
 # Plots and save generated images(in form LR, SR, HR) from model to test the model 
 # Save output for all images given for testing  
