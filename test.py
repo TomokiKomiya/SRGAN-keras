@@ -21,16 +21,23 @@ import argparse
 import Utils, Utils_model
 from Utils_model import VGG_LOSS
 
-image_shape = (96,96,3)
+image_shape = (200, 200, 1)
 
 def test_model(input_hig_res, model, number_of_images, output_dir):
     
     x_test_lr, x_test_hr = Utils.load_test_data_for_model(input_hig_res, 'jpg', number_of_images)
+
+    x_test_lr = x_test_lr.reshape(x_test_lr.shape[0], x_test_lr.shape[1], x_test_lr.shape[2], 1)
+    x_test_hr = x_test_hr.reshape(x_test_hr.shape[0], x_test_hr.shape[1], x_test_hr.shape[2], 1)
+
     Utils.plot_test_generated_images_for_model(output_dir, model, x_test_hr, x_test_lr)
 
 def test_model_for_lr_images(input_low_res, model, number_of_images, output_dir):
 
     x_test_lr = Utils.load_test_data(input_low_res, 'jpg', number_of_images)
+        
+    x_test_lr = x_test_lr.reshape(x_test_lr.shape[0], x_test_lr.shape[1], x_test_lr.shape[2], 1)
+    
     Utils.plot_test_generated_images(output_dir, model, x_test_lr)
 
 if __name__== "__main__":
@@ -48,7 +55,7 @@ if __name__== "__main__":
     
     parser.add_argument('-m', '--model_dir', action='store', dest='model_dir', default='./model/gen_model3000.h5' ,
                     help='Path for model')
-                    
+
     parser.add_argument('-n', '--number_of_images', action='store', dest='number_of_images', default=25 ,
                     help='Number of Images', type=int)
                     

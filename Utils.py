@@ -41,7 +41,7 @@ def lr_images(images_real , downscale):
     
     images = []
     for img in  range(len(images_real)):
-        images.append(imresize(images_real[img], [images_real[img].shape[0]//downscale,images_real[img].shape[1]//downscale], interp='bicubic', mode=None))
+        images.append(imresize(images_real[img], [images_real[img].shape[0]//downscale,images_real[img].shape[1]//downscale], interp='nearest', mode=None))
     images_lr = array(images)
     return images_lr
     
@@ -101,7 +101,7 @@ def load_training_data(directory, ext, number_of_images = 1000, train_test_ratio
     
     x_train = files[:number_of_train_images]
     x_test = files[number_of_train_images:number_of_images]
-    
+
     x_train_hr = hr_images(x_train)
     x_train_hr = normalize(x_train_hr)
     
@@ -153,7 +153,7 @@ def load_test_data(directory, ext, number_of_images = 100):
 def plot_generated_images(output_dir, epoch, generator, x_test_hr, x_test_lr , dim=(1, 3), figsize=(15, 5)):
     
     examples = x_test_hr.shape[0]
-    print(examples)
+
     value = randint(0, examples)
     image_batch_hr = denormalize(x_test_hr)
     image_batch_hr = image_batch_hr.reshape(image_batch_hr.shape[0], image_batch_hr.shape[1], image_batch_hr.shape[2], 1)
@@ -190,6 +190,8 @@ def plot_generated_images(output_dir, epoch, generator, x_test_hr, x_test_lr , d
     plt.savefig(output_dir + 'generated_image_%d.png' % epoch)
     
     # plt.show()
+
+    print("Image Saved Successfully")
     
 # Plots and save generated images(in form LR, SR, HR) from model to test the model 
 # Save output for all images given for testing  
@@ -203,25 +205,31 @@ def plot_test_generated_images_for_model(output_dir, generator, x_test_hr, x_tes
     image_batch_lr = denormalize(image_batch_lr)
     
     for index in range(examples):
-    
+        
+        image_batch_hr_res = image_batch_hr[index].reshape(image_batch_hr.shape[1], image_batch_hr.shape[2])
+        image_batch_lr_res = image_batch_lr[index].reshape(image_batch_lr.shape[1], image_batch_lr.shape[2])
+        generated_image_res = generated_image[index].reshape(generated_image.shape[1], generated_image.shape[2])
+
         plt.figure(figsize=figsize)
     
         plt.subplot(dim[0], dim[1], 1)
-        plt.imshow(image_batch_lr[index], interpolation='nearest')
+        plt.imshow(image_batch_lr_res, cmap = "gray", interpolation='None')
         plt.axis('off')
         
         plt.subplot(dim[0], dim[1], 2)
-        plt.imshow(generated_image[index], interpolation='nearest')
+        plt.imshow(generated_image_res, cmap = "gray", interpolation='None')
         plt.axis('off')
     
         plt.subplot(dim[0], dim[1], 3)
-        plt.imshow(image_batch_hr[index], interpolation='nearest')
+        plt.imshow(image_batch_hr_res, cmap = "gray", interpolation='None')
         plt.axis('off')
     
         plt.tight_layout()
         plt.savefig(output_dir + 'test_generated_image_%d.png' % index)
     
         #plt.show()
+
+    print("Image Saved Successfully")
 
 # Takes LR images and save respective HR images
 def plot_test_generated_images(output_dir, generator, x_test_lr, figsize=(5, 5)):
@@ -232,16 +240,20 @@ def plot_test_generated_images(output_dir, generator, x_test_lr, figsize=(5, 5))
     generated_image = denormalize(gen_img)
     
     for index in range(examples):
-    
+        
+        generated_image_res = generated_image[index].reshape(generated_image.shape[1], generated_image.shape[2])
+
         #plt.figure(figsize=figsize)
     
-        plt.imshow(generated_image[index], interpolation='nearest')
+        plt.imshow(generated_image_res, cmap = "gray", interpolation='None')
         plt.axis('off')
         
         plt.tight_layout()
         plt.savefig(output_dir + 'high_res_result_image_%d.png' % index)
     
         #plt.show()
+    
+    print("Image Saved Successfully")
 
 
 
