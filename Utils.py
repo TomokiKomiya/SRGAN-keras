@@ -19,6 +19,9 @@ import sys
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 
+# Better to use downscale factor as 4 (2)
+downscale_factor = 2
+
 # Subpixel Conv will upsample from (h, w, c) to (h/r, w/r, c/r^2)
 def SubpixelConv2D(input_shape, scale=4):
     def subpixel_shape(input_shape):
@@ -105,13 +108,13 @@ def load_training_data(directory, ext, number_of_images = 1000, train_test_ratio
     x_train_hr = hr_images(x_train)
     x_train_hr = normalize(x_train_hr)
     
-    x_train_lr = lr_images(x_train, 4)
+    x_train_lr = lr_images(x_train, downscale_factor)
     x_train_lr = normalize(x_train_lr)
     
     x_test_hr = hr_images(x_test)
     x_test_hr = normalize(x_test_hr)
     
-    x_test_lr = lr_images(x_test, 4)
+    x_test_lr = lr_images(x_test, downscale_factor)
     x_test_lr = normalize(x_test_lr)
     
     return x_train_lr, x_train_hr, x_test_lr, x_test_hr
@@ -129,7 +132,7 @@ def load_test_data_for_model(directory, ext, number_of_images = 100):
     x_test_hr = hr_images(files)
     x_test_hr = normalize(x_test_hr)
     
-    x_test_lr = lr_images(files, 4)
+    x_test_lr = lr_images(files, downscale_factor)
     x_test_lr = normalize(x_test_lr)
     
     return x_test_lr, x_test_hr
@@ -143,7 +146,7 @@ def load_test_data(directory, ext, number_of_images = 100):
         print("Please reduce number of images to %d" % len(files))
         sys.exit()
         
-    x_test_lr = lr_images(files, 4)
+    x_test_lr = lr_images(files, downscale_factor)
     x_test_lr = normalize(x_test_lr)
     
     return x_test_lr

@@ -17,8 +17,8 @@ import numpy as np
 import argparse
 
 np.random.seed(10)
-# Better to use downscale factor as 4
-downscale_factor = 4
+# Better to use downscale factor as 4 (2)
+downscale_factor = 2
 # Remember to change image shape if you are having different size of images
 image_shape = (200,200,1)
 
@@ -102,7 +102,7 @@ def train(epochs, batch_size, input_dir, output_dir, model_save_dir, number_of_i
 
         if e == 1 or e % 25 == 0:
             Utils.plot_generated_images(output_dir, e, generator, x_test_hr, x_test_lr)
-        if e % 300 == 0:
+        if e % 250 == 0:
             generator.save(model_save_dir + 'gen_model%d.h5' % e)
             discriminator.save(model_save_dir + 'dis_model%d.h5' % e)
 

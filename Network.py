@@ -83,7 +83,7 @@ class Generator(object):
 	    model = add([gen_model, model])
 	    
 	    # Using 2 UpSampling Blocks
-	    for index in range(2):
+	    for index in range(1):
 	        model = up_sampling_block(model, 3, 256, 1)
             # model = up_sampling_block(model, 3, 256, 1)
 	    
