@@ -15,7 +15,8 @@ from numpy.random import randint
 from scipy.misc import imresize
 import os
 import sys
-
+from PIL import Image
+from time import sleep
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 
@@ -208,27 +209,39 @@ def plot_test_generated_images_for_model(output_dir, generator, x_test_hr, x_tes
     image_batch_lr = denormalize(image_batch_lr)
     
     for index in range(examples):
-        
-        image_batch_hr_res = image_batch_hr[index].reshape(image_batch_hr.shape[1], image_batch_hr.shape[2])
-        image_batch_lr_res = image_batch_lr[index].reshape(image_batch_lr.shape[1], image_batch_lr.shape[2])
+        print("begin")
+
+        # image_batch_hr_res = image_batch_hr[index].reshape(image_batch_hr.shape[1], image_batch_hr.shape[2])
+        # image_batch_lr_res = image_batch_lr[index].reshape(image_batch_lr.shape[1], image_batch_lr.shape[2])
         generated_image_res = generated_image[index].reshape(generated_image.shape[1], generated_image.shape[2])
 
-        plt.figure(figsize=figsize)
-    
-        plt.subplot(dim[0], dim[1], 1)
-        plt.imshow(image_batch_lr_res, cmap = "gray", interpolation='None')
-        plt.axis('off')
+        # print(image_batch_hr_res.shape)
+        # print(image_batch_lr_res.shape)
+        # print(generated_image_res.shape)
+        # print(type(generated_image_res))
+        # print("==========================")
         
-        plt.subplot(dim[0], dim[1], 2)
-        plt.imshow(generated_image_res, cmap = "gray", interpolation='None')
-        plt.axis('off')
+        pil_img_gray = Image.fromarray(generated_image_res)
+        pil_img_gray.save(output_dir + 'result_image_%d.png' % index)
+
+        sleep(0.01)
+        print("end")
+        # plt.figure(figsize=figsize)
+
+        # plt.subplot(dim[0], dim[1], 1)
+        # plt.imshow(image_batch_lr_res, cmap = "gray", interpolation='None')
+        # plt.axis('off')
+        
+        # plt.subplot(dim[0], dim[1], 2)
+        # plt.imshow(generated_image_res, cmap = "gray", interpolation='None')
+        # plt.axis('off')
     
-        plt.subplot(dim[0], dim[1], 3)
-        plt.imshow(image_batch_hr_res, cmap = "gray", interpolation='None')
-        plt.axis('off')
+        # plt.subplot(dim[0], dim[1], 3)
+        # plt.imshow(image_batch_hr_res, cmap = "gray", interpolation='None')
+        # plt.axis('off')
     
-        plt.tight_layout()
-        plt.savefig(output_dir + 'test_generated_image_%d.png' % index)
+        # plt.tight_layout()
+        # plt.savefig(output_dir + 'test_generated_image_%d.png' % index)
     
         #plt.show()
 

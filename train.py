@@ -20,7 +20,7 @@ np.random.seed(10)
 # Better to use downscale factor as 4 (2)
 downscale_factor = 2
 # Remember to change image shape if you are having different size of images
-image_shape = (200,200,1)
+image_shape = (250,250,1)
 
 # Combined network
 def get_gan_network(discriminator, shape, generator, optimizer):
@@ -102,7 +102,7 @@ def train(epochs, batch_size, input_dir, output_dir, model_save_dir, number_of_i
 
         if e == 1 or e % 25 == 0:
             Utils.plot_generated_images(output_dir, e, generator, x_test_hr, x_test_lr)
-        if e % 250 == 0:
+        if e % 100 == 0:
             generator.save(model_save_dir + 'gen_model%d.h5' % e)
             discriminator.save(model_save_dir + 'dis_model%d.h5' % e)
 
@@ -111,13 +111,13 @@ if __name__== "__main__":
 
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('-i', '--input_dir', action='store', dest='input_dir', default='./data/' ,
+    parser.add_argument('-i', '--input_dir', action='store', dest='input_dir', default='./data/4dct-0' ,
                     help='Path for input images')
                     
-    parser.add_argument('-o', '--output_dir', action='store', dest='output_dir', default='./output/' ,
+    parser.add_argument('-o', '--output_dir', action='store', dest='output_dir', default='./output/4dct-0/' ,
                     help='Path for Output images')
     
-    parser.add_argument('-m', '--model_save_dir', action='store', dest='model_save_dir', default='./model/' ,
+    parser.add_argument('-m', '--model_save_dir', action='store', dest='model_save_dir', default='./model/4dct-0/' ,
                     help='Path for model')
 
     parser.add_argument('-b', '--batch_size', action='store', dest='batch_size', default=64,
